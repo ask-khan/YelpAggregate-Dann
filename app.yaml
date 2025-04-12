@@ -1,0 +1,25 @@
+runtime: python
+env: flex
+entrypoint: gunicorn -b :$PORT wsgi:app
+
+runtime_config:
+  operating_system: "ubuntu22"
+  runtime_version: "3.10"
+
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+
+automatic_scaling:
+  max_num_instances: 2
+  min_num_instances: 1
+
+env_variables:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
+  POSTGRES_DATABASE: sample
+  PUBLIC_IP: '34.173.221.164'
+  POSTGRES_INSTANCE_CONNECTION_NAME: yelp-scapo-dann:us-central1:sample
+  DATABASE_URL: "postgresql://postgres:password@/sample?host=/cloudsql/yelp-scapo-dann:us-central1:sample"

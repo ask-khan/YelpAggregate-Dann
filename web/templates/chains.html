@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table">
+    <tbody>
+    <tr>
+        <form method="post">
+            {{ chain_form.hidden_tag() }}
+            <td>
+                {{ chain_form.name(class="form-control", placeholder="Name") }}
+            </td>
+            <td>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table table-bordered">
+    <br>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for chain in chains %}
+    <tr>
+        <td>{{ chain.id }}</td>
+        <td>{{ chain.name }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

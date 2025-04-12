@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table">
+    <tbody>
+        <tr>
+            <form method="post">
+                {{ key_form.hidden_tag() }}
+                <td>
+                    {{ key_form.key(class="form-control", placeholder="API Key", value=current_key) }}
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-primary">Change</button>
+                </td>
+                <td>Rate Limit Remaining:</td>
+                <td>{{ratelimit}}</td>
+            </form>
+        </tr>
+        <tr>
+            <form method="post">
+                {{ search_form.hidden_tag() }}
+                <td>
+                    {{ search_form.location(class="form-control", placeholder="County") }}
+                </td>
+                <td>
+                    {{ search_form.search_from(class="form-control search-from-select", placeholder="Search From") }}
+                </td>
+                <td>
+                    {{ search_form.category(class="form-control category-select", placeholder="Category") }}
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </td>
+            </form>
+        </tr>
+    </tbody>
+</table>
+<div style="padding-top: 1rem; padding-bottom: 1rem;" >
+    <button id="run_yelp_job" class="btn btn-primary table-bordered">Run Yelp Job</button>
+    <button id="refresh_view" class="btn btn-primary table-bordered">Refresh View</button>
+</div>
+
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>County</th>
+            <th>Category</th>
+            <th>Search From</th>
+            <th>Job ID</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Record Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for search in searches %}
+        <tr class='clickable-row' data-href='searches/{{ search.id }}'>
+            <td>{{ search.id }}</td>
+            <td>{{ search.location_string }}</td>
+            <td>{{ search.category }}</td>
+            <td>{{ search.search_type }}</td>
+            <td>{{ search.job.id }}</td>
+            <td>{{ search.created | humandelta }}</td>
+            <td>{{ search.job.state }}</td>
+            <td>{{ search.records.where(YelpRecord.is_chain == False).count() }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

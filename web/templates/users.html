@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+{% if is_admin %}
+<table class="table">
+    <tbody>
+    <tr>
+        <form method="post">
+            {{ user_form.hidden_tag() }}
+            <td>
+                {{ user_form.email(class="form-control", placeholder="Email") }}
+            </td>
+            <td>
+                {{ user_form.password(class="form-control", placeholder="Password") }}
+            </td>
+            <td>
+                {{ user_form.is_admin(class="form-check-input") }}
+                <label class="form-check-label" for="is_admin">Admin</label>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+{% endif %}
+
+
+<table class="table table-bordered">
+    <br>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Created</th>
+        <th>Last Activity</th>
+        <th>Is Admin</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.utc_created | humandelta }}</td>
+        <td>{{ user.utc_activity | humandelta if user.utc_activity }}</td>
+        <td>{{ user.is_admin | checkbox }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

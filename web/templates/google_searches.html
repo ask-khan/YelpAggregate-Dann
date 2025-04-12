@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="padding-top: 1rem; padding-bottom: 1rem;" >
+    <button id="run_google_job" class="btn btn-primary table-bordered">Run Good Search Job</button>
+    <button id="refresh_view" class="btn btn-primary table-bordered">Refresh View</button>
+</div>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Search String</th>
+        <th>Yelp Record</th>
+        <th>Job</th>
+        <th>Created</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for search in searches %}
+    <tr>
+        <td>{{ search.id }}</td>
+        <td>{{ search.search_string }}</td>
+        <td>{{ search.yelp_record_id }}</td>
+        <td>{{ search.job_id }}</td>
+        <td>{{ search.created | humandelta }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

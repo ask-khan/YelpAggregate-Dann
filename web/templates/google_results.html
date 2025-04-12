@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Search</th>
+        <th>Doordash</th>
+        <th>Postmates</th>
+        <th>UberEats</th>
+        <th>Grubhub</th>
+        <th>Caviar</th>
+        <th>ChowNow</th>
+        <th>Facebook URL</th>
+        <th>Instagram URL</th>
+        <th>Order Links</th>
+        <th>Menu Links</th>
+        <th>Website</th>
+        <th>Monday</th>
+        <th>Tueday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Sunday</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for result in results %}
+    <tr>
+        <td>{{ result.id }}</td>
+        <td>{{ result.search_id }}</td>
+        <td>{{ result.doordash|checkbox }}</td>
+        <td>{{ result.postmates|checkbox }}</td>
+        <td>{{ result.ubereats|checkbox }}</td>
+        <td>{{ result.grubhub|checkbox }}</td>
+        <td>{{ result.caviar|checkbox }}</td>
+        <td>{{ result.chownow|checkbox }}</td>
+        <td>{{ result.facebook_url if result.facebook_url }}</td>
+        <td>{{ result.instagram_url if result.instagram_url }}</td>
+        <td>{{ result.order_links if result.order_links }}</td>
+        <td>{{ result.menu_links if result.menu_links }}</td>
+        <td>{{ result.website if result.website }}</td>
+        <td>
+            {{ result.monopentime if result.monopentime}}
+            {{ " - " + result.monclosetime if result.monclosetime}}
+        </td>
+        <td>
+            {{ result.tueopentime if result.tueopentime }}
+            {{ " - " + result.tueclosetime if result.tueclosetime }}
+        </td>
+        <td>
+            {{ result.wedopentime if result.wedopentime }}
+            {{ " - " + result.wedclosetime if result.wedclosetime }}
+        </td>
+        <td>
+            {{ result.thuopentime if result.thuopentime }}
+            {{ " - " + result.thuclosetime if result.thuclosetime }}
+        </td>
+        <td>
+            {{ result.friopentime if result.friopentime }}
+            {{ " - " + result.friclosetime if result.friclosetime }}
+        </td>
+        <td>
+            {{ result.satopentime if result.satopentime }}
+            {{ " - " + result.satclosetime if result.satclosetime }}
+        </td>
+        <td>
+            {{ result.sunopentime if result.sunopentime }}
+            {{ " - " + result.sunclosetime if result.sunclosetime }}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

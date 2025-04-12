@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='/bootstrap.min.css') }}" rel="stylesheet">
+
+    <title>Yelp Aggregator</title>
+
+    <style>
+        .clickable-row {
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 75% !important
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Yelp Aggregator</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                {% for item in nav_items %}
+                <li class="nav-item {% if item[1] == current_endpoint %} active {% endif %}">
+                    <a class="nav-link" href="{{ item[2] }}">{{ item[0] }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Begin page content -->
+    <main role="main" class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert {% if category == " error" %}alert-danger {% else %}alert-primary{% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+    </main>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".clickable-row").click(function () {
+                window.location = $(this).data("href");
+            });
+
+            // Debug log to ensure script is running
+            console.log("Script initialized");
+
+            const $searchFrom = $('.search-from-select');
+            const $categoryField = $('.category-select').parent();
+
+            function toggleCategoryVisibility() {
+                if ($searchFrom.val() === 'restaurants') {
+                    $categoryField.show();
+                } else {
+                    $categoryField.hide();
+                }
+            }
+
+            // Run on page load
+            toggleCategoryVisibility();
+
+            // Bind change event and ensure it's properly attached
+            $(document).on('change', '.search-from-select', function () {
+                toggleCategoryVisibility();
+            });
+
+            $("#run_yelp_job").on("click", function () {
+                $("#run_yelp_job").hide();
+                $("#refresh_view").hide();
+
+                fetch('/run_script', {
+                    method: 'POST',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Start checking job status
+                        checkJobStatus();
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            $("#run_google_job").on("click", function () {
+                $("#run_google_job").hide();
+                $("#refresh_view").hide();
+
+                fetch('/run_google_script', {
+                    method: 'POST',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Start checking job status
+                        checkGoogleJobStatus();
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            function checkGoogleJobStatus() {
+                const intervalId = setInterval(() => {
+                    fetch('/check_google_all_jobs')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Job Status:', data);
+
+                            // If all jobs are complete
+                            if (data.all_complete) {
+                                clearInterval(intervalId); // Stop checking
+                                $("#run_yelp_job").show();
+                                $("#refresh_view").show();
+                                console.log('All jobs completed!');
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking job status:', error);
+                            clearInterval(intervalId); // Stop on error
+                        });
+                }, 30000); // Check every 30 seconds
+            }
+
+            function checkJobStatus() {
+                const intervalId = setInterval(() => {
+                    fetch('/check_all_jobs')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Job Status:', data);
+
+                            // If all jobs are complete
+                            if (data.all_complete) {
+                                clearInterval(intervalId); // Stop checking
+                                $("#run_yelp_job").show();
+                                $("#refresh_view").show();
+                                console.log('All jobs completed!');
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking job status:', error);
+                            clearInterval(intervalId); // Stop on error
+                        });
+                }, 10000); // Check every 30 seconds
+            }
+        });
+
+        
+
+        $("#refresh_view").on("click", function () {
+            location.reload();
+        });
+
+    </script>
+</body>
+
+</html>

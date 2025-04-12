@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="post">
+    Google Search next
+    {{ google_n_form.csrf_token() }}
+    {{ google_n_form.n() }}
+    records
+    <button type="submit" class="btn btn-primary">Go</button>
+</form>
+
+<a href="/searches/{{ sid }}/export"><button class="btn btn-primary">Export CSV</button></a>
+<button class="btn btn-primary outreach-btn" onclick="importToOutreach({{sid}})">Bulk Import Into Outreach</button>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Yelp</th>
+        <th>Doordash</th>
+        <th>Postmates</th>
+        <th>UberEats</th>
+        <th>Grubhub</th>
+        <th>Caviar</th>
+        <th>ChowNow</th>
+        <th>Facebook</th>
+        <th>Instagram</th>
+        <th>Website</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Sunday</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for record in records %}
+    <tr>
+        <td>{{ record.name }}</td>
+        <td>{{ record.phone }}</td>
+        <td>{{ record.street }}, {{ record.city }}, {{ record.state }} {{ record.zip_code }}</td>
+        <td><a href="{{ record.url }}">Yelp</a></td>
+        {% if record | check_search_exists %}
+            {% if record.googlesearch.job.state == "complete" %}
+                <td>{{ record.googlesearch.googleresult.doordash | checkbox}}</td>
+                <td>{{ record.googlesearch.googleresult.postmates | checkbox}}</td>
+                <td>{{ record.googlesearch.googleresult.ubereats | checkbox}}</td>
+                <td>{{ record.googlesearch.googleresult.grubhub | checkbox}}</td>
+                <td>{{ record.googlesearch.googleresult.caviar | checkbox}}</td>
+                <td>{{ record.googlesearch.googleresult.chownow | checkbox}}</td>
+
+                {% if record.googlesearch.googleresult.facebook_url %}
+                <td><a href="{{ record.googlesearch.googleresult.facebook_url }}">Facebook</a></td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.instagram_url %}
+                <td><a href="{{ record.googlesearch.googleresult.instagram_url }}">Instagram</a></td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.website %}
+                <td><a href="{{ record.googlesearch.googleresult.website }}">Website</a></td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.monopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.monopentime if record.googlesearch.googleresult.monopentime}}
+                    {{ " - " + record.googlesearch.googleresult.monclosetime if record.googlesearch.googleresult.monclosetime}}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.tueopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.tueopentime if record.googlesearch.googleresult.tueopentime }}
+                    {{ " - " + record.googlesearch.googleresult.tueclosetime if record.googlesearch.googleresult.tueclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+                
+                {% if record.googlesearch.googleresult.wedopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.wedopentime if record.googlesearch.googleresult.wedopentime }}
+                    {{ " - " + record.googlesearch.googleresult.wedclosetime if record.googlesearch.googleresult.wedclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.thuopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.thuopentime if record.googlesearch.googleresult.thuopentime }}
+                    {{ " - " + record.googlesearch.googleresult.thuclosetime if record.googlesearch.googleresult.thuclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.friopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.friopentime if record.googlesearch.googleresult.friopentime }}
+                    {{ " - " + record.googlesearch.googleresult.friclosetime if record.googlesearch.googleresult.friclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.satopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.satopentime if record.googlesearch.googleresult.satopentime }}
+                    {{ " - " + record.googlesearch.googleresult.satclosetime if record.googlesearch.googleresult.satclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+                {% if record.googlesearch.googleresult.sunopentime %}
+                <td>
+                    {{ record.googlesearch.googleresult.sunopentime if record.googlesearch.googleresult.sunopentime }}
+                    {{ " - " + record.googlesearch.googleresult.sunclosetime if record.googlesearch.googleresult.sunclosetime }}
+                </td>
+                {% else %}
+                <td>❌</td>
+                {% endif %}
+
+            {% endif %}
+
+            {% if record.facebooksearch %}
+                {% if record.facebooksearch.facebookresult %}
+                    {% if record.facebooksearch.facebookresult.email %}
+                    <td>{{ record.facebooksearch.facebookresult.email }}</td>
+                    {% else %}
+                    <td>❌</td>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% else %}
+        <td colspan="10">
+            <center>
+                <form method="post">
+                    {{ google_form.csrf_token() }}
+                    {{ google_form.record_id(value=record.id) }}
+                    <button type="submit" class="btn btn-primary">Perform Google Search</button>
+                </form>
+            </center>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+    function importToOutreach(sid) {
+        alert(sid)
+        var request = new XMLHttpRequest();
+        request.open("GET", '/bulk-import-into-outreach/' + sid);
+        request.onreadystatechange = function() {
+            // Check if the request is compete and was successful
+            if(this.readyState === 4 && this.status === 200) {
+                // Inserting the response from server into an HTML element
+                alert(request.response);
+            }
+        };
+        request.send();
+    }
+</script>
+{% endblock %}

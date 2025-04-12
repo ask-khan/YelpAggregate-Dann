@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table table-bordered">
+    <br>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Created</th>
+        <th>State</th>
+        <th>Finished</th>
+        <th>Duration</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for job in jobs %}
+    <tr>
+        <td>{{ job.id }}</td>
+        <td>{{ job.kind }}</td>
+        <td>{{ job.created | humandelta }}</td>
+        <td>{{ job.state }}</td>
+        <td>{{ job.finished | humandelta if job.finished  }}</td>
+        <td>{{ (job.finished - job.created) | humanduration if job.finished }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
